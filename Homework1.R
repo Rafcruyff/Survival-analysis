@@ -14,7 +14,12 @@ d = (x <= cc)
 num_events = sum(d)
 # Compute the maximum likelihood estimator
 # of the uncensored times using log likelihood
+
+# For this we take the product of f_X(t_i|lambda)f_Y(d_i) for all i as likelihood
+# then 100log(lambda/3)-sum_(i=1)^100 t_i  will be log-likelihood.
+# and MLE will be
 MLE_u = n/sum(tt)
+
 # Compute the maximum likelihood estimator
-# of the censored times using log likelihood
-MLE_c = 1
+# of the uncensored times using log likelihood
+MLE_c = num_events/sum(tt)
