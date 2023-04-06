@@ -89,3 +89,49 @@ p_value <- 2 * pnorm(-abs(U1))
 surv_obj <- Surv(time = kidney$time, event = kidney$delta)
 group <- factor(kidney$type)
 survdiff(surv_obj ~ group)
+
+
+# Q3
+
+# For ordering data
+library(dplyr)
+# Loading the leukemia data 
+library(KMsurv)
+# For the KM curve
+library(survival)
+data("bmt")
+kidney1 <- kidney[kidney$type==1,]
+kidney2 <- kidney[kidney$type==2,]
+
+time_points <- sort(unique(kidney$time))
+time_points1 <- sort(unique(kidney1$time))
+time_points2 <- sort(unique(kidney2$time))
+
+d <- data.frame(t = time_points)
+
+for (i in 1:length(time_points)){
+  time_point = time_points[i]
+  d$Y[i] <- sum(kidney$time >= time_point)
+  d$d[i] <- sum(kidney[kidney$time == time_point, "delta"])
+  d$Y1[i] <- sum(kidney1$time >= time_point)
+  d$d1[i] <- sum(kidney1[kidney1$time == time_point, "delta"])
+  d$Y2[i] <- sum(kidney2$time >= time_point)
+  d$d2[i] <- sum(kidney2[kidney2$time == time_point, "delta"])
+}
+
+d <- mutate(d,
+            L = (Y1*Y2)/(Y1+Y2),
+            int1 = L/Y1*d1,
+            int2 = L/Y2*d2,
+            int3 = L^2/(Y1*Y2)*(d1+d2))
+
+Z1 = sum(d$int1, na.rm = TRUE)-sum(d$int2, na.rm = TRUE)
+V11 = sum(d$int3, na.rm = TRUE)
+U1 = Z1/sqrt(V11)
+p_value <- 2 * pnorm(-abs(U1))
+
+# Now with the package
+
+surv_obj <- Surv(time = kidney$time, event = kidney$delta)
+group <- factor(kidney$type)
+survdiff(surv_obj ~ group)
