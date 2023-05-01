@@ -1,0 +1,11 @@
+F(t) = P(T <= t) = P((unobserved) failure before t)
+
+F^(t) = 1/N sum_{i=1}^n 1(observed time <= t)1(observed time is failure)/P(observed time is failure) 
+
+Derivation: 
+
+No censoring:
+F^(t) = (number of failure times <= t)/(number of failure times)
+
+Censoring:
+F^(t) = (number of failure times <= t
