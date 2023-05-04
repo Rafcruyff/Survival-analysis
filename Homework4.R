@@ -100,8 +100,41 @@ library(KMsurv)
 # For the KM curve
 library(survival)
 data("bmt")
-kidney1 <- kidney[kidney$type==1,]
-kidney2 <- kidney[kidney$type==2,]
+
+bmt1 <- subset(bmt, z10==0)
+bmt2 <- subset(bmt, z10==1)
+
+?bmt
+
+bmt1_surv <- Surv(time = bmt1$t1, event = bmt1$d1)
+group <- factor(bmt1$group)
+survdiff(bmt1_surv ~ group)
+
+bmt2_surv <- Surv(time = bmt2$t2, event = bmt2$d2)
+group <- factor(bmt2$group)
+survdiff(bmt2_surv ~ group)
+
+bmt1_fit <- survfit(Surv(t1, d1) ~ group, data = bmt1)
+bmt2_fit <- survfit(Surv(t2, d2) ~ group, data = bmt2)
+plot(bmt1_fit)
+plot(bmt2_fit)
+
+bmt1_groups <- split(bmt1, f = bmt1$group)
+bmt2_groups <- split(bmt2, f = bmt2$group)
+
+time_points1 <- sort(unique(bmt1$t1))
+time_points1_groups <- list()
+time_points2 <- sort(unique(bmt2$t1))
+time_points2_groups <- list()
+
+for (group in seq_along(bmt1_groups)){
+  time_points1_groups[[group]] <- sort(unique(bmt1_groups[group]$t1))
+}
+
+for (group in seq_along(bmt2_groups)){
+  print(sort(unique(bmt2_groups[group]$t1)))
+  time_points2_groups[[group]] <- sort(unique(bmt2_groups[group]$t1))
+}
 
 time_points <- sort(unique(kidney$time))
 time_points1 <- sort(unique(kidney1$time))
@@ -135,3 +168,5 @@ p_value <- 2 * pnorm(-abs(U1))
 surv_obj <- Surv(time = kidney$time, event = kidney$delta)
 group <- factor(kidney$type)
 survdiff(surv_obj ~ group)
+
+
